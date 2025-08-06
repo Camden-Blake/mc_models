@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<materials>
+  <material depletable="true" id="1" name="UO2" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.000430565" name="U235"/>
+    <nuclide ao="0.0470902" name="O16 "/>
+    <nuclide ao="0.0231145" name="U238"/>
+  </material>
+  <material depletable="true" id="2" name="UMetal" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.00045316" name="U235"/>
+    <nuclide ao="0.0468003" name="U238"/>
+  </material>
+  <material id="3" name="Cladding" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.0602611" name="Al27"/>
+  </material>
+  <material id="4" name="Cladding" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.0500614" name="Al27"/>
+  </material>
+  <material id="5" name="Cladding" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.0517799" name="Al27"/>
+  </material>
+  <material id="6" name="Moderator">
+    <density units="sum"/>
+    <nuclide ao="0.0667578" name="H1"/>
+    <nuclide ao="0.0333789" name="O16"/>
+    <sab name="c_H_in_H2O"/>
+  </material>
+  <material id="7" name="Support Material" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.0602611" name="Al27"/>
+  </material>
+  <material id="8" name="Cadmium" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.0005768508299999999" name="Cd106"/>
+    <nuclide ao="0.000411440592" name="Cd108"/>
+    <nuclide ao="0.00577777498" name="Cd110"/>
+    <nuclide ao="0.00592835853" name="Cd111"/>
+    <nuclide ao="0.011170519406" name="Cd112"/>
+    <nuclide ao="0.0056651848179999995" name="Cd113"/>
+    <nuclide ao="0.013322705835999999" name="Cd114"/>
+    <nuclide ao="0.003480565008" name="Cd116"/>
+  </material>
+  <material id="9" name="Filler Gas" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="0.000164" name="He4"/>
+  </material>
+  <material id="10" name="Air" temperature="293.15">
+    <density units="sum"/>
+    <nuclide ao="4.14e-05" name="N14"/>
+    <nuclide ao="9.07e-06" name="O16"/>
+  </material>
+</materials>

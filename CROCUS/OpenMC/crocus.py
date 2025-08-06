@@ -312,7 +312,7 @@ out_air_cell = openmc.Cell(region=(-ta_surf & +wa_top_surf & -ta_top_surf & ~bp_
 
 # Create dummy universe
 dummy_universe = openmc.Universe(name = "Dummy")
-dummy_cell = openmc.Cell(name="Dummy")
+dummy_cell = openmc.Cell(name="Dummy", region=+ta_bot_surf)
 dummy_universe.add_cell(dummy_cell)
 
 # Create aliases for lattice definitions
