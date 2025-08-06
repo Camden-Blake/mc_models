@@ -15,8 +15,8 @@ model = openmc.Model()
 Reactor_Temperature = 20 + 273.15 # Kelvin
 
 UO2 = openmc.Material(name="UO2")
-UO2.add_nuclide('O16 ', percent=4.70902e-02, percent_type='ao')
 UO2.add_nuclide('U235', percent=4.30565e-04, percent_type='ao')
+UO2.add_nuclide('O16 ', percent=4.70902e-02, percent_type='ao')
 UO2.add_nuclide('U238', percent=2.31145e-02, percent_type='ao')
 UO2.set_density(units='sum')
 UO2.temperature = Reactor_Temperature
@@ -192,10 +192,9 @@ ug_hex = -ug_N & +ug_S & +ug_W & -ug_E & -ug_NE & +ug_SW & -ug_NW & +ug_SE
 ug_region = ug_hex & +ug_bot_bot_surf & -ug_top_top_surf
 
 # Cruciforms
-inr_fu_crux_surf     = openmc.model.CruciformPrism(distances=[3*uo2_pi_pitch, 6*uo2_pi_pitch, 9*uo2_pi_pitch, 11*uo2_pi_pitch])
-out_inr_fu_cux_surf  = openmc.model.CruciformPrism(distances=[umet_pi_pitch*2, umet_pi_pitch*4, umet_pi_pitch*6, umet_pi_pitch*7])
-out_out_fu_crux_surf = openmc.model.CruciformPrism(distances=[umet_pi_pitch*3, umet_pi_pitch*5, umet_pi_pitch*7, umet_pi_pitch*8, umet_pi_pitch*9, umet_pi_pitch*10])
-out_empty_crux_surf  = openmc.model.CruciformPrism(distances=[umet_pi_pitch*5,umet_pi_pitch*6,umet_pi_pitch*7,umet_pi_pitch*8,umet_pi_pitch*9,umet_pi_pitch*10,umet_pi_pitch*11])
+inr_fu_crux_surf      = openmc.model.CruciformPrism(distances=[3*uo2_pi_pitch, 6*uo2_pi_pitch, 9*uo2_pi_pitch, 11*uo2_pi_pitch])
+out_inr_fu_crux_surf  = openmc.model.CruciformPrism(distances=[umet_pi_pitch*2, umet_pi_pitch*4, umet_pi_pitch*6, umet_pi_pitch*7])
+out_out_crux_surf     = openmc.model.CruciformPrism(distances=[umet_pi_pitch*5,umet_pi_pitch*6,umet_pi_pitch*7,umet_pi_pitch*8,umet_pi_pitch*9,umet_pi_pitch*10,umet_pi_pitch*11])
 
 ## Cells
 # Create the cells for the uo2 pin cell
@@ -302,35 +301,63 @@ umet_empty_pi_universe = openmc.Universe(cells=[
 
 # Create the cells that are outisde of the lattices (includes that space between the lattices)
 bp_cell = openmc.Cell(region=(+ta_bot_surf & - bp_top_surf & bp_hex), fill=Support_Material)
-out_lg_bot_cell  = openmc.Cell(region=(+lg_bot_bot_surf & -lg_bot_top_surf & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Support_Material)
-out_lg_clad_cell = openmc.Cell(region=(+lg_bot_top_surf & -lg_top_bot_surf & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Cadmium)
-out_lg_top_cell  = openmc.Cell(region=(+lg_top_bot_surf & -lg_top_top_surf & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Support_Material)
-out_ug_bot_cell  = openmc.Cell(region=(+ug_bot_bot_surf & -ug_bot_top_surf & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Support_Material)
-out_ug_clad_cell = openmc.Cell(region=(+ug_bot_top_surf & -ug_top_bot_surf & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Cadmium)
-out_ug_top_cell  = openmc.Cell(region=(+ug_top_bot_surf & -ug_top_top_surf & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Support_Material)
-out_mod_cell = openmc.Cell(region=(-ta_surf & +ta_bot_surf & -wa_top_surf & ~bp_region & ~lg_region & ~ug_region & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf))), fill = Moderator)
-out_air_cell = openmc.Cell(region=(-ta_surf & +wa_top_surf & -ta_top_surf & ~bp_region & ~lg_region & ~ug_region & (+out_empty_crux_surf | (-out_inr_fu_cux_surf & +inr_fu_crux_surf))), fill = Air)
+out_lg_bot_cell  = openmc.Cell(region=(+lg_bot_bot_surf & -lg_bot_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Support_Material)
+out_lg_clad_cell = openmc.Cell(region=(+lg_bot_top_surf & -lg_top_bot_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Cadmium)
+out_lg_top_cell  = openmc.Cell(region=(+lg_top_bot_surf & -lg_top_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Support_Material)
+out_ug_bot_cell  = openmc.Cell(region=(+ug_bot_bot_surf & -ug_bot_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Support_Material)
+out_ug_clad_cell = openmc.Cell(region=(+ug_bot_top_surf & -ug_top_bot_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Cadmium)
+out_ug_top_cell  = openmc.Cell(region=(+ug_top_bot_surf & -ug_top_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Support_Material)
+out_mod_cell = openmc.Cell(region=(-ta_surf & +ta_bot_surf & -wa_top_surf & ~bp_region & ~lg_region & ~ug_region & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf))), fill = Moderator)
+out_air_cell = openmc.Cell(region=(-ta_surf & +wa_top_surf & -ta_top_surf & ~bp_region & ~lg_region & ~ug_region & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf))), fill = Air)
+
+# Create dummy universe
+dummy_universe = openmc.Universe(name = "Dummy")
+dummy_cell = openmc.Cell(name="Dummy")
+dummy_universe.add_cell(dummy_cell)
+
+# Create aliases for lattice definitions
+uo2 = uo2_pi_universe
+met = umet_pi_universe
+emp = umet_empty_pi_universe
+dum = dummy_universe
 
 # Create the uo2 fuel lattice
 inr_fuel_lattice = openmc.RectLattice()
-inr_fuel_lattice.lower_left = [-11*uo2_pi_pitch, -11*uo2_pi_pitch]
-inr_fuel_lattice.pitch = [uo2_pi_pitch, uo2_pi_pitch]
-inr_fuel_lattice.universes = np.tile(uo2_pi_universe, [22, 22])
-inr_fuel_cell = openmc.Cell(region = (-inr_fu_crux_surf), fill = inr_fuel_lattice)
+inr_fuel_lattice.lower_left = [-11*uo2_pi_pitch, -11*uo2_pi_pitch, -ta_top_dist]
+inr_fuel_lattice.pitch = [uo2_pi_pitch, uo2_pi_pitch, 2*ta_top_dist]
+inr_fuel_lattice.universes = np.tile(uo2_pi_universe, [1, 22, 22])
+inr_fuel_cell = openmc.Cell(region = (-inr_fu_crux_surf & +pi_bot_surf & -ta_top_surf), fill = inr_fuel_lattice)
 
 # Create the umet fuel lattice
 out_fuel_lattice = openmc.RectLattice()
-out_fuel_lattice.lower_left = [-10*umet_pi_pitch, -10*umet_pi_pitch]
-out_fuel_lattice.pitch = [umet_pi_pitch, umet_pi_pitch]
-out_fuel_lattice.universes = np.tile(umet_pi_universe, [20, 20])
-out_fuel_cell = openmc.Cell(region = (-out_out_fu_crux_surf & +out_inr_fu_cux_surf), fill = out_fuel_lattice)
-
-# Create the umet fuel lattice
-out_empty_lattice = openmc.RectLattice()
-out_empty_lattice.lower_left = [-11*umet_pi_pitch, -11*umet_pi_pitch]
-out_empty_lattice.pitch = [umet_pi_pitch, umet_pi_pitch]
-out_empty_lattice.universes = np.tile(umet_empty_pi_universe, [22, 22])
-out_empty_cell = openmc.Cell(region = (-out_empty_crux_surf & +out_out_fu_crux_surf), fill = out_empty_lattice)
+out_fuel_lattice.lower_left = [-11*umet_pi_pitch, -11*umet_pi_pitch, -ta_top_dist]
+out_fuel_lattice.pitch = [umet_pi_pitch, umet_pi_pitch, 2*ta_top_dist]
+out_fuel_lattice.universes = \
+    [[
+        [dum, dum, dum, dum, dum, dum, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, dum, dum, dum, dum, dum, dum],
+        [dum, dum, dum, dum, dum, emp, emp, emp, met, met, met, met, met, met, emp, emp, emp, dum, dum, dum, dum, dum],
+        [dum, dum, dum, dum, emp, emp, met, met, met, met, met, met, met, met, met, met, emp, emp, dum, dum, dum, dum],
+        [dum, dum, dum, emp, met, met, met, met, met, met, met, met, met, met, met, met, met, met, emp, dum, dum, dum],
+        [dum, dum, emp, met, met, met, met, met, met, dum, dum, dum, dum, met, met, met, met, met, met, emp, dum, dum],
+        [dum, emp, emp, met, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, met, emp, emp, dum],
+        [emp, emp, met, met, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, met, met, emp, emp],
+        [emp, emp, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, emp, emp],
+        [emp, met, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, met, emp],
+        [emp, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, emp],
+        [emp, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, emp],
+        [emp, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, emp],
+        [emp, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, emp],
+        [emp, met, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, met, emp],
+        [emp, emp, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, emp, emp],
+        [emp, emp, met, met, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, met, met, emp, emp],
+        [dum, emp, emp, met, met, met, met, dum, dum, dum, dum, dum, dum, dum, dum, met, met, met, met, emp, emp, dum],
+        [dum, dum, emp, met, met, met, met, met, met, dum, dum, dum, dum, met, met, met, met, met, met, emp, dum, dum],
+        [dum, dum, dum, emp, met, met, met, met, met, met, met, met, met, met, met, met, met, met, emp, dum, dum, dum],
+        [dum, dum, dum, dum, emp, emp, met, met, met, met, met, met, met, met, met, met, emp, emp, dum, dum, dum, dum],
+        [dum, dum, dum, dum, dum, emp, emp, emp, met, met, met, met, met, met, emp, emp, emp, dum, dum, dum, dum, dum],
+        [dum, dum, dum, dum, dum, dum, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, dum, dum, dum, dum, dum, dum],
+    ]]
+out_fuel_cell = openmc.Cell(region = (-out_out_crux_surf& +out_inr_fu_crux_surf & +pi_bot_surf & -ta_top_surf), fill = out_fuel_lattice)
 
 # Add all cells to the root universe
 Universe = openmc.Universe(cells = [
@@ -344,8 +371,7 @@ Universe = openmc.Universe(cells = [
     out_mod_cell,
     out_air_cell,
     inr_fuel_cell,
-    out_fuel_cell,
-    out_empty_cell
+    out_fuel_cell
 ])
 
 # Fill in Geometry
@@ -397,9 +423,9 @@ model.settings.entropy_mesh.dimension = [5, 5, 5]
 # K-Eigenvalue
 model.settings.run_mode = 'eigenvalue'
 model.settings.particles = int(1e5)
-model.settings.batches = 1000
-model.settings.inactive = 100
+model.settings.batches = 300
+model.settings.inactive = 50
 
 # Export/run
 #=====================
-model.export_to_model_xml()
+model.export_to_xml()
