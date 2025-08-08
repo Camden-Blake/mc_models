@@ -11,8 +11,8 @@
     <angle type="isotropic"/>
     <energy parameters="988000.0 2.249e-06" type="watt"/>
   </source>
-  <entropy_mesh>2</entropy_mesh>
-  <mesh id="2">
+  <entropy_mesh>4</entropy_mesh>
+  <mesh id="4">
     <dimension>5 5 5</dimension>
     <lower_left>-29.169999999999998 -29.169999999999998 5.7</lower_left>
     <upper_right>29.169999999999998 29.169999999999998 105.7</upper_right>

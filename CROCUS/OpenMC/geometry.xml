@@ -133,30 +133,30 @@
   <surface coeffs="0.0 0.0 0.85" id="21" type="z-cylinder"/>
   <surface coeffs="0.0 0.0 0.9475" id="22" type="z-cylinder"/>
   <surface boundary="vacuum" coeffs="0.0 0.0 65" id="23" type="z-cylinder"/>
-  <surface coeffs="36.0" id="24" type="y-plane"/>
-  <surface coeffs="1.0 1.0 0.0 54.0" id="25" type="plane"/>
-  <surface coeffs="36.0" id="26" type="x-plane"/>
-  <surface coeffs="-1.0 1.0 0.0 -54.0" id="27" type="plane"/>
-  <surface coeffs="-36.0" id="28" type="y-plane"/>
-  <surface coeffs="1.0 1.0 0.0 -54.0" id="29" type="plane"/>
-  <surface coeffs="-36.0" id="30" type="x-plane"/>
-  <surface coeffs="-1.0 1.0 0.0 54.0" id="31" type="plane"/>
-  <surface coeffs="38.0" id="32" type="y-plane"/>
-  <surface coeffs="1.0 1.0 0.0 57.0" id="33" type="plane"/>
-  <surface coeffs="38.0" id="34" type="x-plane"/>
-  <surface coeffs="-1.0 1.0 0.0 -57.0" id="35" type="plane"/>
-  <surface coeffs="-38.0" id="36" type="y-plane"/>
-  <surface coeffs="1.0 1.0 0.0 -57.0" id="37" type="plane"/>
-  <surface coeffs="-38.0" id="38" type="x-plane"/>
-  <surface coeffs="-1.0 1.0 0.0 57.0" id="39" type="plane"/>
-  <surface coeffs="42.0" id="40" type="y-plane"/>
-  <surface coeffs="1.0 1.0 0.0 63.0" id="41" type="plane"/>
-  <surface coeffs="42.0" id="42" type="x-plane"/>
-  <surface coeffs="-1.0 1.0 0.0 -63.0" id="43" type="plane"/>
-  <surface coeffs="-42.0" id="44" type="y-plane"/>
-  <surface coeffs="1.0 1.0 0.0 -63.0" id="45" type="plane"/>
-  <surface coeffs="-42.0" id="46" type="x-plane"/>
-  <surface coeffs="-1.0 1.0 0.0 63.0" id="47" type="plane"/>
+  <surface coeffs="36" id="24" type="y-plane"/>
+  <surface coeffs="1.0 1.0 0.0 50.91168824543143" id="25" type="plane"/>
+  <surface coeffs="36" id="26" type="x-plane"/>
+  <surface coeffs="-1.0 1.0 0.0 -50.91168824543143" id="27" type="plane"/>
+  <surface coeffs="-36" id="28" type="y-plane"/>
+  <surface coeffs="1.0 1.0 0.0 -50.91168824543143" id="29" type="plane"/>
+  <surface coeffs="-36" id="30" type="x-plane"/>
+  <surface coeffs="-1.0 1.0 0.0 50.91168824543143" id="31" type="plane"/>
+  <surface coeffs="38" id="32" type="y-plane"/>
+  <surface coeffs="1.0 1.0 0.0 53.74011537017761" id="33" type="plane"/>
+  <surface coeffs="38" id="34" type="x-plane"/>
+  <surface coeffs="-1.0 1.0 0.0 -53.74011537017761" id="35" type="plane"/>
+  <surface coeffs="-38" id="36" type="y-plane"/>
+  <surface coeffs="1.0 1.0 0.0 -53.74011537017761" id="37" type="plane"/>
+  <surface coeffs="-38" id="38" type="x-plane"/>
+  <surface coeffs="-1.0 1.0 0.0 53.74011537017761" id="39" type="plane"/>
+  <surface coeffs="42" id="40" type="y-plane"/>
+  <surface coeffs="1.0 1.0 0.0 59.396969619669996" id="41" type="plane"/>
+  <surface coeffs="42" id="42" type="x-plane"/>
+  <surface coeffs="-1.0 1.0 0.0 -59.396969619669996" id="43" type="plane"/>
+  <surface coeffs="-42" id="44" type="y-plane"/>
+  <surface coeffs="1.0 1.0 0.0 -59.396969619669996" id="45" type="plane"/>
+  <surface coeffs="-42" id="46" type="x-plane"/>
+  <surface coeffs="-1.0 1.0 0.0 59.396969619669996" id="47" type="plane"/>
   <surface coeffs="-5.511" id="48" type="x-plane"/>
   <surface coeffs="5.511" id="49" type="x-plane"/>
   <surface coeffs="-5.511" id="50" type="y-plane"/>

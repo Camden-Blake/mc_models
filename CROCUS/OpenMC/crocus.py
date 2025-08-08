@@ -144,6 +144,13 @@ umet_pi_fu_rad = 1.7/2
 umet_pi_clad_rad = umet_pi_fu_rad + 0.0975
 umet_pi_pitch = 2.9170
 
+bp_incircle_rad = 36
+bp_diagonal_intersect = np.sqrt(2)*bp_incircle_rad
+lg_incircle_rad = 38
+lg_diagonal_intersect = np.sqrt(2)*lg_incircle_rad
+ug_incircle_rad = 42
+ug_diagonal_intersect = np.sqrt(2)*ug_incircle_rad
+
 ta_rad = 65
 
 # Radial surfaces
@@ -155,39 +162,40 @@ umet_pi_clad_surf = openmc.ZCylinder(r = umet_pi_clad_rad)
 
 ta_surf = openmc.ZCylinder(r = ta_rad, boundary_type = 'vacuum')
 
+# Assuming Regular Octagons
 # Bottom Plate
-bp_N  = openmc.YPlane(36.)
-bp_NE = openmc.Plane(1., 1., 0., 54.)
-bp_E  = openmc.XPlane(36.)
-bp_SE = openmc.Plane(-1., 1., 0., -54.)
-bp_S  = openmc.YPlane(-36.)
-bp_SW = openmc.Plane(1., 1., 0., -54.)
-bp_W  = openmc.XPlane(-36.)
-bp_NW = openmc.Plane(-1., 1., 0., 54.)
+bp_N  = openmc.YPlane(bp_incircle_rad)
+bp_NE = openmc.Plane(1., 1., 0., bp_diagonal_intersect)
+bp_E  = openmc.XPlane(bp_incircle_rad)
+bp_SE = openmc.Plane(-1., 1., 0., -bp_diagonal_intersect)
+bp_S  = openmc.YPlane(-bp_incircle_rad)
+bp_SW = openmc.Plane(1., 1., 0., -bp_diagonal_intersect)
+bp_W  = openmc.XPlane(-bp_incircle_rad)
+bp_NW = openmc.Plane(-1., 1., 0., bp_diagonal_intersect)
 bp_hex = -bp_N & +bp_S & +bp_W & -bp_E & -bp_NE & +bp_SW & -bp_NW & +bp_SE
 bp_region = bp_hex & +ta_bot_surf & -bp_top_surf
 
 # Lower Grid
-lg_N  = openmc.YPlane(38.)
-lg_NE = openmc.Plane(1., 1., 0., 57.)
-lg_E  = openmc.XPlane(38.)
-lg_SE = openmc.Plane(-1., 1., 0., -57.)
-lg_S  = openmc.YPlane(-38.)
-lg_SW = openmc.Plane(1., 1., 0., -57.)
-lg_W  = openmc.XPlane(-38.)
-lg_NW = openmc.Plane(-1., 1., 0., 57.)
+lg_N  = openmc.YPlane(lg_incircle_rad)
+lg_NE = openmc.Plane(1., 1., 0., lg_diagonal_intersect)
+lg_E  = openmc.XPlane(lg_incircle_rad)
+lg_SE = openmc.Plane(-1., 1., 0., -lg_diagonal_intersect)
+lg_S  = openmc.YPlane(-lg_incircle_rad)
+lg_SW = openmc.Plane(1., 1., 0., -lg_diagonal_intersect)
+lg_W  = openmc.XPlane(-lg_incircle_rad)
+lg_NW = openmc.Plane(-1., 1., 0., lg_diagonal_intersect)
 lg_hex = -lg_N & +lg_S & +lg_W & -lg_E & -lg_NE & +lg_SW & -lg_NW & +lg_SE
 lg_region = lg_hex & +lg_bot_bot_surf & -lg_top_top_surf
 
 # Upper Grid
-ug_N  = openmc.YPlane(42.)
-ug_NE = openmc.Plane(1., 1., 0., 63.)
-ug_E  = openmc.XPlane(42.)
-ug_SE = openmc.Plane(-1., 1., 0., -63.)
-ug_S  = openmc.YPlane(-42.)
-ug_SW = openmc.Plane(1., 1., 0., -63.)
-ug_W  = openmc.XPlane(-42.)
-ug_NW = openmc.Plane(-1., 1., 0., 63.)
+ug_N  = openmc.YPlane(ug_incircle_rad)
+ug_NE = openmc.Plane(1., 1., 0., ug_diagonal_intersect)
+ug_E  = openmc.XPlane(ug_incircle_rad)
+ug_SE = openmc.Plane(-1., 1., 0., -ug_diagonal_intersect)
+ug_S  = openmc.YPlane(-ug_incircle_rad)
+ug_SW = openmc.Plane(1., 1., 0., -ug_diagonal_intersect)
+ug_W  = openmc.XPlane(-ug_incircle_rad)
+ug_NW = openmc.Plane(-1., 1., 0., ug_diagonal_intersect)
 ug_hex = -ug_N & +ug_S & +ug_W & -ug_E & -ug_NE & +ug_SW & -ug_NW & +ug_SE
 ug_region = ug_hex & +ug_bot_bot_surf & -ug_top_top_surf
 
@@ -391,28 +399,46 @@ source.energy = openmc.stats.Watt()
 model.settings.source = [source]
 
 # Tallies
-flux_profile_tally_mesh = openmc.RegularMesh()
-flux_profile_tally_mesh.lower_left = [-ta_rad, -ta_rad, fu_bot_dist]
-flux_profile_tally_mesh.upper_right = [ta_rad, ta_rad, fu_top_dist]
-flux_profile_tally_mesh.dimension = [500, 500, 100]
-flux_profile_mesh_filter = openmc.MeshFilter(flux_profile_tally_mesh)
+flux_position_mesh = openmc.RegularMesh()
+flux_position_mesh.lower_left = [-bp_incircle_rad, -bp_incircle_rad, fu_bot_dist]
+flux_position_mesh.upper_right = [bp_incircle_rad, bp_incircle_rad, fu_top_dist]
+flux_position_mesh.dimension = [500, 500, 100]
+flux_position_mesh_filter = openmc.MeshFilter(flux_position_mesh)
 
-flux_profile_energy_filter = openmc.EnergyFilter(values=[1.E-5, 0.625, 20.E6])
+flux_uo2_pin_mesh = openmc.RegularMesh()
+flux_uo2_pin_mesh.lower_left = [-11*uo2_pi_pitch, -11*uo2_pi_pitch, fu_bot_dist]
+flux_uo2_pin_mesh.upper_right = [11*uo2_pi_pitch, 11*uo2_pi_pitch, fu_top_dist]
+flux_uo2_pin_mesh.dimension = [22, 22, 1]
+flux_uo2_pin_mesh_filter = openmc.MeshFilter(flux_uo2_pin_mesh)
 
-flux_profile_tally = openmc.Tally(name='flux')
-flux_profile_tally.scores = ['flux']
-flux_profile_tally.filters = [flux_profile_energy_filter, flux_profile_mesh_filter]
+flux_umet_pin_mesh = openmc.RegularMesh()
+flux_umet_pin_mesh.lower_left = [-11*umet_pi_pitch, -11*umet_pi_pitch, fu_bot_dist]
+flux_umet_pin_mesh.upper_right = [11*umet_pi_pitch, 11*umet_pi_pitch, fu_top_dist]
+flux_umet_pin_mesh.dimension = [22, 22, 1]
+flux_umet_pin_mesh_filter = openmc.MeshFilter(flux_umet_pin_mesh)
 
-flux_spectrum_tally = openmc.Tally(name='flux')
-flux_spectrum_tally.scores = ['flux']
-
+thermal_fast_energy_filter = openmc.EnergyFilter(values=[1.E-5, 0.625, 20.E6])
 flux_spectrum_energy_filter = openmc.EnergyFilter(values=np.logspace(start=np.log10(1e-5), 
                                                        stop=np.log10(20e6), 
                                                        num=501))
 
-flux_spectrum_tally.filters = [flux_spectrum_energy_filter]
+flux_position_tally = openmc.Tally(name='Flux vs Position')
+flux_position_tally.scores = ['flux']
+flux_position_tally.filters = [thermal_fast_energy_filter, flux_position_mesh_filter]
 
-model.tallies = openmc.Tallies([flux_profile_tally, flux_spectrum_tally])
+flux_uo2_pin_tally = openmc.Tally(name='UO2 Pin Flux')
+flux_uo2_pin_tally.scores = ['flux']
+flux_uo2_pin_tally.filters = [thermal_fast_energy_filter, flux_uo2_pin_mesh_filter]
+
+flux_umet_pin_tally = openmc.Tally(name='UMET Pin Flux')
+flux_umet_pin_tally.scores = ['flux']
+flux_umet_pin_tally.filters = [thermal_fast_energy_filter, flux_umet_pin_mesh_filter]
+
+flux_spectrum_tally = openmc.Tally(name='Flux Spectrum')
+flux_spectrum_tally.filters = [flux_spectrum_energy_filter]
+flux_spectrum_tally.scores = ['flux']
+
+model.tallies = openmc.Tallies([flux_position_tally, flux_uo2_pin_tally, flux_umet_pin_tally, flux_spectrum_tally])
 
 # Entropy
 model.settings.entropy_mesh = openmc.RegularMesh()
