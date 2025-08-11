@@ -420,7 +420,7 @@ flux_umet_pin_mesh_filter = openmc.MeshFilter(flux_umet_pin_mesh)
 thermal_fast_energy_filter = openmc.EnergyFilter(values=[1.E-5, 0.625, 20.E6])
 flux_spectrum_energy_filter = openmc.EnergyFilter(values=np.logspace(start=np.log10(1e-5), 
                                                        stop=np.log10(20e6), 
-                                                       num=501))
+                                                       num=129))
 
 flux_position_tally = openmc.Tally(name='Flux vs Position')
 flux_position_tally.scores = ['flux']
