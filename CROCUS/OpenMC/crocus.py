@@ -136,12 +136,12 @@ pi_top_surf      = openmc.ZPlane(pi_top_dist, boundary_type = 'vacuum')
 ta_top_surf      = openmc.ZPlane(ta_top_dist, boundary_type = 'vacuum')
 
 # Radial distances from tank center
-uo2_pi_fu_rad = 1.052/2.0
-uo2_pi_clad_rad = uo2_pi_fu_rad + 0.085
+uo2_pi_fu_rad = 0.526
+uo2_pi_clad_rad = 0.63
 uo2_pi_pitch = 1.8370
 
-umet_pi_fu_rad = 1.7/2
-umet_pi_clad_rad = umet_pi_fu_rad + 0.0975
+umet_pi_fu_rad = 0.85
+umet_pi_clad_rad = 0.965
 umet_pi_pitch = 2.9170
 
 bp_incircle_rad = 36
@@ -202,7 +202,9 @@ ug_region = ug_hex & +ug_bot_bot_surf & -ug_top_top_surf
 # Cruciforms
 inr_fu_crux_surf      = openmc.model.CruciformPrism(distances=[3*uo2_pi_pitch, 6*uo2_pi_pitch, 9*uo2_pi_pitch, 11*uo2_pi_pitch])
 out_inr_fu_crux_surf  = openmc.model.CruciformPrism(distances=[umet_pi_pitch*2, umet_pi_pitch*4, umet_pi_pitch*6, umet_pi_pitch*7])
-out_out_crux_surf     = openmc.model.CruciformPrism(distances=[umet_pi_pitch*5,umet_pi_pitch*6,umet_pi_pitch*7,umet_pi_pitch*8,umet_pi_pitch*9,umet_pi_pitch*10,umet_pi_pitch*11])
+out_out_fu_crux_surf  = openmc.model.CruciformPrism(distances=[umet_pi_pitch*5,umet_pi_pitch*6,umet_pi_pitch*7,umet_pi_pitch*8,umet_pi_pitch*9,umet_pi_pitch*10,umet_pi_pitch*11])
+inr_fuel_region = -inr_fu_crux_surf & +pi_bot_surf & -ta_top_surf
+out_fuel_region = +out_inr_fu_crux_surf & -out_out_fu_crux_surf & +pi_bot_surf & -ta_top_surf
 
 ## Cells
 # Create the cells for the uo2 pin cell
@@ -309,14 +311,14 @@ umet_empty_pi_universe = openmc.Universe(cells=[
 
 # Create the cells that are outisde of the lattices (includes that space between the lattices)
 bp_cell = openmc.Cell(region=(+ta_bot_surf & - bp_top_surf & bp_hex), fill=Support_Material)
-out_lg_bot_cell  = openmc.Cell(region=(+lg_bot_bot_surf & -lg_bot_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Support_Material)
-out_lg_clad_cell = openmc.Cell(region=(+lg_bot_top_surf & -lg_top_bot_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Cadmium)
-out_lg_top_cell  = openmc.Cell(region=(+lg_top_bot_surf & -lg_top_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & lg_hex), fill = Support_Material)
-out_ug_bot_cell  = openmc.Cell(region=(+ug_bot_bot_surf & -ug_bot_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Support_Material)
-out_ug_clad_cell = openmc.Cell(region=(+ug_bot_top_surf & -ug_top_bot_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Cadmium)
-out_ug_top_cell  = openmc.Cell(region=(+ug_top_bot_surf & -ug_top_top_surf & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf)) & ug_hex), fill = Support_Material)
-out_mod_cell = openmc.Cell(region=(-ta_surf & +ta_bot_surf & -wa_top_surf & ~bp_region & ~lg_region & ~ug_region & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf))), fill = Moderator)
-out_air_cell = openmc.Cell(region=(-ta_surf & +wa_top_surf & -ta_top_surf & ~bp_region & ~lg_region & ~ug_region & (+out_out_crux_surf | (-out_inr_fu_crux_surf & +inr_fu_crux_surf))), fill = Air)
+out_lg_bot_cell  = openmc.Cell(region=(+lg_bot_bot_surf & -lg_bot_top_surf & ~inr_fuel_region & ~out_fuel_region & lg_hex), fill = Support_Material)
+out_lg_clad_cell = openmc.Cell(region=(+lg_bot_top_surf & -lg_top_bot_surf & ~inr_fuel_region & ~out_fuel_region & lg_hex), fill = Cadmium)
+out_lg_top_cell  = openmc.Cell(region=(+lg_top_bot_surf & -lg_top_top_surf & ~inr_fuel_region & ~out_fuel_region & lg_hex), fill = Support_Material)
+out_ug_bot_cell  = openmc.Cell(region=(+ug_bot_bot_surf & -ug_bot_top_surf & ~inr_fuel_region & ~out_fuel_region & ug_hex), fill = Support_Material)
+out_ug_clad_cell = openmc.Cell(region=(+ug_bot_top_surf & -ug_top_bot_surf & ~inr_fuel_region & ~out_fuel_region & ug_hex), fill = Cadmium)
+out_ug_top_cell  = openmc.Cell(region=(+ug_top_bot_surf & -ug_top_top_surf & ~inr_fuel_region & ~out_fuel_region & ug_hex), fill = Support_Material)
+out_mod_cell = openmc.Cell(region=(-ta_surf & +ta_bot_surf & -wa_top_surf & ~bp_region & ~lg_region & ~ug_region & ~inr_fuel_region & ~out_fuel_region), fill = Moderator)
+out_air_cell = openmc.Cell(region=(-ta_surf & +wa_top_surf & -ta_top_surf & ~bp_region & ~lg_region & ~ug_region & ~inr_fuel_region & ~out_fuel_region), fill = Air)
 
 # Create dummy universe
 dummy_universe = openmc.Universe(name = "Dummy")
@@ -334,7 +336,7 @@ inr_fuel_lattice = openmc.RectLattice()
 inr_fuel_lattice.lower_left = [-11*uo2_pi_pitch, -11*uo2_pi_pitch, -ta_top_dist]
 inr_fuel_lattice.pitch = [uo2_pi_pitch, uo2_pi_pitch, 2*ta_top_dist]
 inr_fuel_lattice.universes = np.tile(uo2_pi_universe, [1, 22, 22])
-inr_fuel_cell = openmc.Cell(region = (-inr_fu_crux_surf & +pi_bot_surf & -ta_top_surf), fill = inr_fuel_lattice)
+inr_fuel_cell = openmc.Cell(region = inr_fuel_region, fill = inr_fuel_lattice)
 
 # Create the umet fuel lattice
 out_fuel_lattice = openmc.RectLattice()
@@ -365,7 +367,7 @@ out_fuel_lattice.universes = \
         [dum, dum, dum, dum, dum, emp, emp, emp, met, met, met, met, met, met, emp, emp, emp, dum, dum, dum, dum, dum],
         [dum, dum, dum, dum, dum, dum, emp, emp, emp, emp, emp, emp, emp, emp, emp, emp, dum, dum, dum, dum, dum, dum],
     ]]
-out_fuel_cell = openmc.Cell(region = (-out_out_crux_surf& +out_inr_fu_crux_surf & +pi_bot_surf & -ta_top_surf), fill = out_fuel_lattice)
+out_fuel_cell = openmc.Cell(region = out_fuel_region, fill = out_fuel_lattice)
 
 # Add all cells to the root universe
 Universe = openmc.Universe(cells = [
