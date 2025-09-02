@@ -19,4 +19,4 @@ os.remove('settings.xml')
 model.settings.temperature = {'method': 'interpolation'}
 
 set_settings(model)
-model.export_to_xml()
+model.export_to_model_xml()
