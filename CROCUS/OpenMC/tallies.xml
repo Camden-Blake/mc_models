@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <tallies>
   <mesh id="1">
-    <dimension>500 500 100</dimension>
+    <dimension>500 500 1</dimension>
     <lower_left>-36 -36 5.7</lower_left>
     <upper_right>36 36 105.7</upper_right>
   </mesh>

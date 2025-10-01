@@ -404,7 +404,7 @@ model.settings.source = [source]
 flux_position_mesh = openmc.RegularMesh()
 flux_position_mesh.lower_left = [-bp_incircle_rad, -bp_incircle_rad, fu_bot_dist]
 flux_position_mesh.upper_right = [bp_incircle_rad, bp_incircle_rad, fu_top_dist]
-flux_position_mesh.dimension = [500, 500, 100]
+flux_position_mesh.dimension = [500, 500, 1]
 flux_position_mesh_filter = openmc.MeshFilter(flux_position_mesh)
 
 flux_uo2_pin_mesh = openmc.RegularMesh()
@@ -457,3 +457,4 @@ model.settings.inactive = 50
 # Export/run
 #=====================
 model.export_to_xml()
+model.export_to_model_xml()
