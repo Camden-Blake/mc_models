@@ -9,7 +9,7 @@ beavrs_model = get_beavrs_model()
 
 ## Swap TSLs for OTF data
 tsl_change_map = {
-    "c_H_in_H2O" : "otf_HinH2O"
+    "c_H_in_H2O" : "tsl-HinH2O_OTF"
 }
 
 for mat_name, mat_data in beavrs_model.mats.items():

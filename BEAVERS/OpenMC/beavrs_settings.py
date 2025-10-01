@@ -39,12 +39,6 @@ def set_entropy_mesh(model: openmc.Model):
     return
 
 def set_tallies(model: openmc.Model):
-    flux_position_mesh = openmc.RegularMesh()
-    flux_position_mesh.lower_left = lower_left
-    flux_position_mesh.upper_right = upper_right
-    flux_position_mesh.dimension = [500, 500, 100]
-    flux_position_mesh_filter = openmc.MeshFilter(flux_position_mesh)
-
     flux_assembly_mesh = openmc.RegularMesh()
     flux_assembly_mesh.lower_left = lower_left
     flux_assembly_mesh.upper_right = upper_right
@@ -56,10 +50,6 @@ def set_tallies(model: openmc.Model):
                                                            stop=np.log10(20e6), 
                                                            num=129))
 
-    flux_position_tally = openmc.Tally(name='Flux vs Position')
-    flux_position_tally.scores = ['flux']
-    flux_position_tally.filters = [thermal_fast_energy_filter, flux_position_mesh_filter]
-
     flux_assembly_tally = openmc.Tally(name='Assembly Flux')
     flux_assembly_tally.scores = ['flux']
     flux_assembly_tally.filters = [thermal_fast_energy_filter, flux_assembly_mesh_filter]
@@ -68,5 +58,5 @@ def set_tallies(model: openmc.Model):
     flux_spectrum_tally.scores = ['flux']
     flux_spectrum_tally.filters = [flux_spectrum_energy_filter]
 
-    model.tallies = openmc.Tallies([flux_position_tally, flux_assembly_tally, flux_spectrum_tally])
+    model.tallies = openmc.Tallies([flux_assembly_tally, flux_spectrum_tally])
     return
