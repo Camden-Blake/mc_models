@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tallies>
+  <mesh id="2">
+    <dimension>100 100 1</dimension>
+    <lower_left>-10.71 -10.71 -210.0</lower_left>
+    <upper_right>10.71 10.71 210.0</upper_right>
+  </mesh>
+  <mesh id="3">
+    <dimension>17 17 1</dimension>
+    <lower_left>-10.71 -10.71 -210.0</lower_left>
+    <upper_right>10.71 10.71 210.0</upper_right>
+  </mesh>
+  <filter id="2" type="energy">
+    <bins>1e-05 0.625 20000000.0</bins>
+  </filter>
+  <filter id="1" type="mesh">
+    <bins>2</bins>
+  </filter>
+  <filter id="3" type="mesh">
+    <bins>3</bins>
+  </filter>
+  <tally id="1" name="flux">
+    <filters>2 1</filters>
+    <scores>flux</scores>
+  </tally>
+  <tally id="2" name="heating">
+    <filters>3</filters>
+    <scores>heating-local</scores>
+  </tally>
+</tallies>
