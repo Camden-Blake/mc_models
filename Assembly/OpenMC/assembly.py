@@ -4,12 +4,14 @@ import openmc.stats
 # Materials
 #=====================
 
+reactor_temperature = 600
+
 fuel = openmc.Material(name='Fuel')
 fuel.add_nuclide(nuclide = 'U235', percent = 0.02644492, percent_type = 'wo')
 fuel.add_nuclide(nuclide = 'U238', percent = 0.85505247, percent_type = 'wo')
 fuel.add_nuclide(nuclide = 'O16' , percent = 0.11850261, percent_type = 'wo')
 fuel.set_density('g/cc', 10.3070)
-fuel.temperature = 565
+fuel.temperature = reactor_temperature
 
 burnable_poison = openmc.Material(name='Burnable Poison')
 burnable_poison.add_nuclide(nuclide = 'U235' , percent = 0.00202753, percent_type = 'wo')
@@ -23,7 +25,7 @@ burnable_poison.add_nuclide(nuclide = 'Gd157', percent = 0.01083999, percent_typ
 burnable_poison.add_nuclide(nuclide = 'Gd158', percent = 0.01731511, percent_type = 'wo')
 burnable_poison.add_nuclide(nuclide = 'Gd160', percent = 0.01543111, percent_type = 'wo')
 burnable_poison.set_density('g/cc', 10.3070)
-burnable_poison.temperature = 565
+burnable_poison.temperature = reactor_temperature
 
 moderator = openmc.Material(name='Borated Water Moderator')
 moderator.add_nuclide(nuclide = 'H1' , percent = 6.663259e-1, percent_type = 'ao')
@@ -32,12 +34,12 @@ moderator.add_nuclide(nuclide = 'B10', percent = 7.186970e-5, percent_type = 'ao
 moderator.add_nuclide(nuclide = 'B11', percent = 2.892846e-4, percent_type = 'ao')
 moderator.set_density('g/cc', 0.70602)
 moderator.add_s_alpha_beta('c_H_in_H2O')
-moderator.temperature = 565
+moderator.temperature = reactor_temperature
 
 helium = openmc.Material(name='Helium')
 helium.add_element(element = 'He', percent = 1, percent_type = 'ao')
 helium.set_density('g/cc', 0.0015981)
-helium.temperature = 565
+helium.temperature = reactor_temperature
 
 fuel_cladding = openmc.Material(name='Zircaloy-4 Cladding')
 fuel_cladding.add_element(element = 'O' , percent = 0.00125, percent_type = 'wo')
@@ -46,14 +48,14 @@ fuel_cladding.add_element(element = 'Fe', percent = 0.00210, percent_type = 'wo'
 fuel_cladding.add_element(element = 'Zr', percent = 0.98115, percent_type = 'wo')
 fuel_cladding.add_element(element = 'Sn', percent = 0.01450, percent_type = 'wo')
 fuel_cladding.set_density('g/cc', 6.55)
-fuel_cladding.temperature = 565
+fuel_cladding.temperature = reactor_temperature
 
 control_rod_absorber = openmc.Material(name='Control Rod Absorber')
 control_rod_absorber.add_element(element = 'Ag', percent = 0.80, percent_type = 'wo')
 control_rod_absorber.add_element(element = 'In', percent = 0.15, percent_type = 'wo')
 control_rod_absorber.add_element(element = 'Cd', percent = 0.05, percent_type = 'wo')
 control_rod_absorber.set_density('g/cc', 10.16)
-control_rod_absorber.temperature = 565
+control_rod_absorber.temperature = reactor_temperature
 
 control_rod_cladding = openmc.Material(name='Control Rod Cladding')
 control_rod_cladding.add_element(element = 'Si', percent = 0.0060, percent_type = 'wo')
@@ -62,7 +64,7 @@ control_rod_cladding.add_element(element = 'Mn', percent = 0.0200, percent_type 
 control_rod_cladding.add_element(element = 'Fe', percent = 0.6840, percent_type = 'wo')
 control_rod_cladding.add_element(element = 'Ni', percent = 0.1000, percent_type = 'wo')
 control_rod_cladding.set_density('g/cc', 8.03)
-control_rod_cladding.temperature = 565
+control_rod_cladding.temperature = reactor_temperature
 
 # Geometry
 #=====================
@@ -80,7 +82,7 @@ assembly_length = 420
 lattice_elements_x = 17
 lattice_elements_y = 17
 
-rod_insertion = 0
+rod_insertion = 375
 
 if rod_insertion < 0 or rod_insertion > assembly_length:
     raise Exception(f"Rod insertion must be [0, {assembly_length}]")
@@ -88,14 +90,14 @@ if rod_insertion < 0 or rod_insertion > assembly_length:
 model = openmc.Model()
 
 # Surfaces
-assembly_top_plane = openmc.ZPlane(z0 = assembly_length/2, boundary_type = 'vacuum')
+assembly_top_plane =    openmc.ZPlane(z0 =  assembly_length/2, boundary_type = 'vacuum')
 assembly_bottom_plane = openmc.ZPlane(z0 = -assembly_length/2, boundary_type = 'vacuum')
 rod_plane = openmc.ZPlane(z0 = assembly_length/2 - rod_insertion)
 
 xmin = openmc.XPlane(x0=-lattice_elements_x*0.5*pitch, boundary_type='reflective')
-xmax = openmc.XPlane(x0=lattice_elements_x*0.5*pitch, boundary_type='reflective')
+xmax = openmc.XPlane(x0= lattice_elements_x*0.5*pitch, boundary_type='reflective')
 ymin = openmc.YPlane(y0=-lattice_elements_y*0.5*pitch, boundary_type='reflective')
-ymax = openmc.YPlane(y0=lattice_elements_y*0.5*pitch, boundary_type='reflective')
+ymax = openmc.YPlane(y0= lattice_elements_y*0.5*pitch, boundary_type='reflective')
 
 fuel_cyl = openmc.ZCylinder(x0 = 0, y0 = 0, r = fuel_rad)
 fuel_helium_gap_cyl = openmc.ZCylinder(x0 = 0, y0 = 0, r = fuel_helium_gap_rad)
@@ -219,7 +221,7 @@ heating_tally_mesh.dimension = [17, 17, 1]
 heating_mesh_filter = openmc.MeshFilter(heating_tally_mesh)
 
 heating_tally = openmc.Tally(name = 'heating')
-heating_tally.scores = ['heating-local']
+heating_tally.scores = ['heating']
 heating_tally.filters = [heating_mesh_filter]
 
 # Add tallies
@@ -227,7 +229,10 @@ model.tallies = openmc.Tallies([flux_tally, heating_tally])
 
 ## Source
 source = openmc.IndependentSource()
-source.space = openmc.stats.Point((0,0,0))
+source.space = openmc.stats.Box(
+    (-lattice_elements_x*0.5*pitch, -lattice_elements_y*0.5*pitch, -assembly_length/2),
+    ( lattice_elements_x*0.5*pitch,  lattice_elements_y*0.5*pitch,  assembly_length/2 - rod_insertion)
+)
 source.angle = openmc.stats.Isotropic()
 source.energy = openmc.stats.Watt()
 model.settings.source = [source]

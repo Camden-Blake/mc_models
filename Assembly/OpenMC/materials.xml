@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <materials>
-  <material depletable="true" id="1" name="Fuel" temperature="565">
+  <material depletable="true" id="1" name="Fuel" temperature="600">
     <density units="g/cc" value="10.307"/>
     <nuclide name="U235" wo="0.02644492"/>
     <nuclide name="U238" wo="0.85505247"/>
     <nuclide name="O16" wo="0.11850261"/>
   </material>
-  <material depletable="true" id="2" name="Burnable Poison" temperature="565">
+  <material depletable="true" id="2" name="Burnable Poison" temperature="600">
     <density units="g/cc" value="10.307"/>
     <nuclide name="U235" wo="0.00202753"/>
     <nuclide name="U238" wo="0.80898345"/>
@@ -19,7 +19,7 @@
     <nuclide name="Gd158" wo="0.01731511"/>
     <nuclide name="Gd160" wo="0.01543111"/>
   </material>
-  <material id="3" name="Borated Water Moderator" temperature="565">
+  <material id="3" name="Borated Water Moderator" temperature="600">
     <density units="g/cc" value="0.70602"/>
     <nuclide ao="0.6663259" name="H1"/>
     <nuclide ao="0.3330861" name="O16"/>
@@ -27,12 +27,12 @@
     <nuclide ao="0.0002892846" name="B11"/>
     <sab name="c_H_in_H2O"/>
   </material>
-  <material id="4" name="Helium" temperature="565">
+  <material id="4" name="Helium" temperature="600">
     <density units="g/cc" value="0.0015981"/>
     <nuclide ao="2e-06" name="He3"/>
     <nuclide ao="0.999998" name="He4"/>
   </material>
-  <material id="5" name="Zircaloy-4 Cladding" temperature="565">
+  <material id="5" name="Zircaloy-4 Cladding" temperature="600">
     <density units="g/cc" value="6.55"/>
     <nuclide name="O16" wo="0.0012466835910117907"/>
     <nuclide name="O17" wo="5.033555467821137e-07"/>
@@ -61,7 +61,7 @@
     <nuclide name="Sn122" wo="0.000689409486231945"/>
     <nuclide name="Sn124" wo="0.0008762916210303822"/>
   </material>
-  <material id="6" name="Control Rod Absorber" temperature="565">
+  <material id="6" name="Control Rod Absorber" temperature="600">
     <density units="g/cc" value="10.16"/>
     <nuclide name="Ag107" wo="0.41100940717766427"/>
     <nuclide name="Ag109" wo="0.3889905928223358"/>
@@ -76,7 +76,7 @@
     <nuclide name="Cd114" wo="0.0145675033416658"/>
     <nuclide name="Cd116" wo="0.003872640356748635"/>
   </material>
-  <material id="7" name="Control Rod Cladding" temperature="565">
+  <material id="7" name="Control Rod Cladding" temperature="600">
     <density units="g/cc" value="8.03"/>
     <nuclide name="Si28" wo="0.005512411036970206"/>
     <nuclide name="Si29" wo="0.00028990501756718373"/>

@@ -5,8 +5,8 @@
   <batches>70</batches>
   <inactive>20</inactive>
   <source particle="neutron" strength="1.0" type="independent">
-    <space type="point">
-      <parameters>0 0 0</parameters>
+    <space type="box">
+      <parameters>-10.71 -10.71 -210.0 10.71 10.71 -165.0</parameters>
     </space>
     <angle type="isotropic"/>
     <energy parameters="988000.0 2.249e-06" type="watt"/>

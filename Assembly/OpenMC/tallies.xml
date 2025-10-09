@@ -25,6 +25,6 @@
   </tally>
   <tally id="2" name="heating">
     <filters>3</filters>
-    <scores>heating-local</scores>
+    <scores>heating</scores>
   </tally>
 </tallies>

@@ -41,7 +41,7 @@
   </lattice>
   <surface boundary="vacuum" coeffs="210.0" id="1" type="z-plane"/>
   <surface boundary="vacuum" coeffs="-210.0" id="2" type="z-plane"/>
-  <surface coeffs="210.0" id="3" type="z-plane"/>
+  <surface coeffs="-165.0" id="3" type="z-plane"/>
   <surface boundary="reflective" coeffs="-10.71" id="4" type="x-plane"/>
   <surface boundary="reflective" coeffs="10.71" id="5" type="x-plane"/>
   <surface boundary="reflective" coeffs="-10.71" id="6" type="y-plane"/>
