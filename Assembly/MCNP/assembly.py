@@ -310,13 +310,13 @@ with open(".source_points.txt", "w") as f:
     for x, y, z in coords:
         f.write(f"{x:10.4f} {y:10.4f} {z:10.4f}\n")
 
-flux_tally = mp.Tally.FMESH(name=14, geometry='xyz', origin=(xmin, ymin, zmin),
-                            i_nodes=xmax, i_subdivisions=100,
-                            j_nodes=ymax, j_subdivisions=100,
-                            k_nodes=zmax,
-                            energy_nodes=(0, 0.625e-6, 20),
-                            format='xdmf'
-                            )
+# flux_tally = mp.Tally.FMESH(name=14, geometry='xyz', origin=(xmin, ymin, zmin),
+#                             i_nodes=xmax, i_subdivisions=100,
+#                             j_nodes=ymax, j_subdivisions=100,
+#                             k_nodes=zmax,
+#                             energy_nodes=(0, 0.625e-6, 20),
+#                             format='xdmf'
+#                             )
 
 # # Flux tally
 # flux_tally_mesh = openmc.RegularMesh()
