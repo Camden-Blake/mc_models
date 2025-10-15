@@ -14,7 +14,7 @@ EXE="/home/camden/School/My_Programs/MCNP-thermal-otf/MCNP_6.3_SOURCE/mcnp-src/m
 NUM_THREADS=16
 
 # Input file
-INP="crocus.mcnp"
+INP="model.mcnp"
 
 # OTF file
 # OTF="/home/camden/School/Data/MCNP/MCNP_DATA/ENDF80SABOTF/tsl-HinH2O_OTF.h5"
