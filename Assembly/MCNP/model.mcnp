@@ -1,4 +1,4 @@
-$ Simplified BEAVRS Assembly with Control Rod Insertion Control at 600K
+$ Simplified BEAVRS Assembly with Control Rod Insertion Control at 600K - Camden Blake
 1 1 -10.307 -12 U 1 IMP:N=1.0 $ Fuel 
 2 2 -10.307 -12 U 2 IMP:N=1.0 $ Poison 
 3 4 -0.0015981 -13 12 U 1 IMP:N=1.0 $ Fuel Helium 
