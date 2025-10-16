@@ -167,10 +167,10 @@ deck += [
     lattice_ymax
 ]
 
-pin_xmin = mp.XPlane(x0=-0.6*pitch, comment = 'Pin bound')
-pin_xmax = mp.XPlane(x0= 0.6*pitch, comment = 'Pin bound')
-pin_ymin = mp.YPlane(y0=-0.6*pitch, comment = 'Pin bound')
-pin_ymax = mp.YPlane(y0= 0.6*pitch, comment = 'Pin bound')
+pin_xmin = mp.XPlane(x0=-0.5*pitch, comment = 'Pin bound')
+pin_xmax = mp.XPlane(x0= 0.5*pitch, comment = 'Pin bound')
+pin_ymin = mp.YPlane(y0=-0.5*pitch, comment = 'Pin bound')
+pin_ymax = mp.YPlane(y0= 0.5*pitch, comment = 'Pin bound')
 deck += [
     pin_xmin,
     pin_xmax,

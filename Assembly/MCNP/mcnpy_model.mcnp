@@ -34,10 +34,10 @@ $ This file was written with mcnpy
 *5 PX 10.71 $ Lattice bound 
 *6 PY -10.71 $ Lattice bound 
 *7 PY 10.71 $ Lattice bound 
-8 PX -0.756 $ Pin bound 
-9 PX 0.756 $ Pin bound 
-10 PY -0.756 $ Pin bound 
-11 PY 0.756 $ Pin bound 
+8 PX -0.63 $ Pin bound 
+9 PX 0.63 $ Pin bound 
+10 PY -0.63 $ Pin bound 
+11 PY 0.63 $ Pin bound 
 12 CZ 0.3975 $ Fuel 
 13 CZ 0.4125 $ Fuel Helium 
 14 CZ 0.475 $ Fuel Clad 
