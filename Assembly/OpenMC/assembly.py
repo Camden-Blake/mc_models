@@ -188,9 +188,9 @@ model.geometry = openmc.Geometry(root=[assembly_cell])
 # K-eigenvalue
 model.settings = openmc.Settings()
 model.settings.run_mode = 'eigenvalue'
-model.settings.particles = int(1e5)
-model.settings.batches = 70
-model.settings.inactive = 20
+model.settings.particles = int(1e6)
+model.settings.batches = 650
+model.settings.inactive = 50
 
 model.settings.temperature = {'method': 'interpolation'}
 

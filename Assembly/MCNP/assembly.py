@@ -295,8 +295,8 @@ deck += mp.Cell(name=99, region=~assembly_region, importances={'n':0}, comment =
 # # Settings
 # #=====================
 
-deck += mp.CriticalitySource(histories=1e5, keff_guess=1.0,
-                             skip_cycles=20, cycles=70)
+deck += mp.CriticalitySource(histories=1e6, keff_guess=1.0,
+                             skip_cycles=50, cycles=650)
 # Place Source points in each pin cell
 coords = [
     (pitch*(i - lattice_elements_x//2),
