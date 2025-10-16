@@ -533,8 +533,8 @@ deck += mp.Cell(name=999, region=(-ta_bot_surf | +ta_top_surf | +ta_surf), impor
 # Settings
 #===============================================================================
 
-deck += mp.CriticalitySource(histories=1e5, keff_guess=1.0,
-                             skip_cycles=50, cycles=300)
+deck += mp.CriticalitySource(histories=1e6, keff_guess=1.0,
+                             skip_cycles=50, cycles=650)
 
 coords = [
     ( 0.5*uo2_pi_pitch,  0.5*uo2_pi_pitch, fu_bot_dist + 1),

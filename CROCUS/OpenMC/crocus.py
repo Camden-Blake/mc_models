@@ -450,8 +450,8 @@ model.settings.entropy_mesh.dimension = [5, 5, 5]
 
 # K-Eigenvalue
 model.settings.run_mode = 'eigenvalue'
-model.settings.particles = int(1e5)
-model.settings.batches = 300
+model.settings.particles = int(1e6)
+model.settings.batches = 650
 model.settings.inactive = 50
 
 # Export/run
