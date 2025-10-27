@@ -28,7 +28,14 @@ class CruciformPrism:
     """Class for holding the surfaces and regions of a cruciform prism."""
     surfaces: list[mp.Surface] = field(default_factory=list)
     internal_region: mp.Region = None
+    external_region: mp.Region = None
 
+@dataclass
+class CruciformPrismArm:
+    """Class for holding the surfaces and regions of a cruciform prism arm."""
+    surfaces: list[mp.Surface] = field(default_factory=list)
+    internal_region: mp.Region = None
+    external_region: mp.Region = None
 
 def cruciform_prism(distances:list[float], 
                     center:tuple[float, float]=(0,0), 
@@ -70,30 +77,38 @@ def cruciform_prism(distances:list[float],
     def make_surface(surf_type: mp.Surface, key: str, val, comment: str) -> mp.Surface:
         return surf_type(**{key: val}, comment=comment)
 
-    def cruciform_arm(d1: float, d2: float, tag: str) -> tuple[list[mp.Surface],mp.Region]:
+    def cruciform_arm(d1: float, d2: float, tag: str) -> CruciformPrismArm:
         s1 = make_surface(surf_type_1, key_1, c1 - d1, tag + " - axis 1 lower plane")
         s2 = make_surface(surf_type_1, key_1, c1 + d1, tag + " - axis 1 upper plane")
         s3 = make_surface(surf_type_2, key_2, c2 - d2, tag + " - axis 2 lower plane")
         s4 = make_surface(surf_type_2, key_2, c2 + d2, tag + " - axis 2 upper plane")
-        return [s1, s2, s3, s4], (+s1 & -s2 & +s3 & -s4)
+        return CruciformPrismArm(
+            surfaces = [s1, s2, s3, s4],
+            internal_region = (+s1 & -s2 & +s3 & -s4),
+            external_region = (-s1 | +s2 | -s3 | +s4)
+        )
+
 
     iters = len(distances) // 2
     for i in range(iters):
         dl = distances[i]
         du = distances[-i - 1]
 
-        arm1_surfs, arm1_region = cruciform_arm(dl, du, base_comment + f" - layer {i} - arm 1")
-        arm2_surfs, arm2_region = cruciform_arm(du, dl, base_comment + f" - layer {i} - arm 2")
+        arm1 = cruciform_arm(dl, du, base_comment + f" - layer {i} - arm 1")
+        arm2 = cruciform_arm(du, dl, base_comment + f" - layer {i} - arm 2")
 
-        prism.surfaces += arm1_surfs + arm2_surfs
-        prism.internal_region = combine_region(prism.internal_region, arm1_region, operator.or_)
-        prism.internal_region = combine_region(prism.internal_region, arm2_region, operator.or_)
+        prism.surfaces += arm1.surfaces + arm2.surfaces
+        prism.internal_region = combine_region(prism.internal_region, arm1.internal_region, operator.or_)
+        prism.internal_region = combine_region(prism.internal_region, arm2.internal_region, operator.or_)
+        prism.external_region = combine_region(prism.external_region, arm1.external_region, operator.and_)
+        prism.external_region = combine_region(prism.external_region, arm2.external_region, operator.and_)
 
     if len(distances) % 2:  # odd number of distances → center square
         d = distances[iters]
-        square_surfs, square_region = cruciform_arm(d, d, base_comment + f" - layer {i} square")
-        prism.surfaces += square_surfs
-        prism.internal_region = combine_region(prism.internal_region, square_region, operator.or_)
+        square = cruciform_arm(d, d, base_comment + f" - layer {i} square")
+        prism.surfaces += square.surfaces
+        prism.internal_region = combine_region(prism.internal_region, square.internal_region, operator.or_)
+        prism.external_region = combine_region(prism.external_region, square.external_region, operator.and_)
 
     return prism
 
@@ -195,8 +210,12 @@ deck += Air
 ## inr = inner
 ## out = outer
 
-# Set the water hieght
+# Set the water height
 wa_height = 96.51  # This measures from the bottom of the active fuel region with a maximum of 100
+
+# The lower limit of 5 was used to ensure the water was above the lower grid plate which simplifies the CSG definitions.
+if wa_height <= 5 or wa_height > 100:
+    raise RuntimeError("Water height is out of bounds and may cause geometry problems.")
 
 # Axial distances from tank bottom
 ta_bot_dist     = 0
@@ -331,8 +350,10 @@ bp_NE = mp.Plane(a= 1., b=1., c=0., d= bp_diagonal_intersect, comment = "Base Pl
 bp_SE = mp.Plane(a=-1., b=1., c=0., d=-bp_diagonal_intersect, comment = "Base Plate SE")
 bp_SW = mp.Plane(a= 1., b=1., c=0., d=-bp_diagonal_intersect, comment = "Base Plate SW")
 bp_NW = mp.Plane(a=-1., b=1., c=0., d= bp_diagonal_intersect, comment = "Base Plate NW")
-bp_hex = -bp_N & +bp_S & +bp_W & -bp_E & -bp_NE & +bp_SW & -bp_NW & +bp_SE
-bp_region = bp_hex & +ta_bot_surf & -bp_top_surf
+bp_oct     = (-bp_N & +bp_S & +bp_W & -bp_E & -bp_NE & +bp_SW & -bp_NW & +bp_SE)
+bp_oct_ext = (+bp_N | -bp_S | -bp_W | +bp_E | +bp_NE | -bp_SW | +bp_NW | -bp_SE)
+bp_region     = (bp_oct     & +ta_bot_surf & -bp_top_surf)
+bp_region_ext = (bp_oct_ext | -ta_bot_surf | +bp_top_surf)
 deck += [
     bp_N,
     bp_E,
@@ -353,11 +374,13 @@ lg_NE = mp.Plane(a= 1., b=1., c=0., d= lg_diagonal_intersect, comment = "Lower G
 lg_SE = mp.Plane(a=-1., b=1., c=0., d=-lg_diagonal_intersect, comment = "Lower Grid SE")
 lg_SW = mp.Plane(a= 1., b=1., c=0., d=-lg_diagonal_intersect, comment = "Lower Grid SW")
 lg_NW = mp.Plane(a=-1., b=1., c=0., d= lg_diagonal_intersect, comment = "Lower Grid NW")
-lg_hex = -lg_N & +lg_S & +lg_W & -lg_E & -lg_NE & +lg_SW & -lg_NW & +lg_SE
-lg_bot_region = lg_hex & +lg_bot_bot_surf & -lg_bot_top_surf
-lg_cad_region = lg_hex & +lg_bot_top_surf & -lg_top_bot_surf
-lg_top_region = lg_hex & +lg_top_bot_surf & -lg_top_top_surf
-lg_region     = lg_hex & +lg_bot_bot_surf & -lg_top_top_surf
+lg_oct     = (-lg_N & +lg_S & +lg_W & -lg_E & -lg_NE & +lg_SW & -lg_NW & +lg_SE)
+lg_oct_ext = (+lg_N | -lg_S | -lg_W | +lg_E | +lg_NE | -lg_SW | +lg_NW | -lg_SE)
+lg_bot_region = (lg_oct     & +lg_bot_bot_surf & -lg_bot_top_surf)
+lg_cad_region = (lg_oct     & +lg_bot_top_surf & -lg_top_bot_surf)
+lg_top_region = (lg_oct     & +lg_top_bot_surf & -lg_top_top_surf)
+lg_region     = (lg_oct     & +lg_bot_bot_surf & -lg_top_top_surf)
+lg_region_ext = (lg_oct_ext | -lg_bot_bot_surf | +lg_top_top_surf)
 deck += [
     lg_N,
     lg_E,
@@ -378,11 +401,13 @@ ug_NE = mp.Plane(a= 1., b=1., c=0., d= ug_diagonal_intersect, comment = "Upper G
 ug_SE = mp.Plane(a=-1., b=1., c=0., d=-ug_diagonal_intersect, comment = "Upper Grid SE")
 ug_SW = mp.Plane(a= 1., b=1., c=0., d=-ug_diagonal_intersect, comment = "Upper Grid SW")
 ug_NW = mp.Plane(a=-1., b=1., c=0., d= ug_diagonal_intersect, comment = "Upper Grid NW")
-ug_hex = -ug_N & +ug_S & +ug_W & -ug_E & -ug_NE & +ug_SW & -ug_NW & +ug_SE
-ug_bot_region = ug_hex & +ug_bot_bot_surf & -ug_bot_top_surf
-ug_cad_region = ug_hex & +ug_bot_top_surf & -ug_top_bot_surf
-ug_top_region = ug_hex & +ug_top_bot_surf & -ug_top_top_surf
-ug_region     = ug_hex & +ug_bot_bot_surf & -ug_top_top_surf
+ug_oct     = (-ug_N & +ug_S & +ug_W & -ug_E & -ug_NE & +ug_SW & -ug_NW & +ug_SE)
+ug_oct_ext = (+ug_N | -ug_S | -ug_W | +ug_E | +ug_NE | -ug_SW | +ug_NW | -ug_SE)
+ug_bot_region = (ug_oct     & +ug_bot_bot_surf & -ug_bot_top_surf)
+ug_cad_region = (ug_oct     & +ug_bot_top_surf & -ug_top_bot_surf)
+ug_top_region = (ug_oct     & +ug_top_bot_surf & -ug_top_top_surf)
+ug_region     = (ug_oct     & +ug_bot_bot_surf & -ug_top_top_surf)
+ug_region_ext = (ug_oct_ext | -ug_bot_bot_surf | +ug_top_top_surf)
 deck += [
     ug_N,
     ug_E,
@@ -394,15 +419,18 @@ deck += [
     ug_NW
 ]
 
-grid_regions = lg_region | ug_region
+grid_regions_ext = (lg_region_ext & ug_region_ext & bp_region_ext)
 
 # Cruciforms
 inr_fu_crux      = cruciform_prism(distances=[3*uo2_pi_pitch, 6*uo2_pi_pitch, 9*uo2_pi_pitch, 11*uo2_pi_pitch], name="Inner Fuel")
 out_inr_fu_crux  = cruciform_prism(distances=[umet_pi_pitch*2, umet_pi_pitch*4, umet_pi_pitch*6, umet_pi_pitch*7], name="Outer Inner Fuel")
 out_out_fu_crux  = cruciform_prism(distances=[umet_pi_pitch*5,umet_pi_pitch*6,umet_pi_pitch*7,umet_pi_pitch*8,umet_pi_pitch*9,umet_pi_pitch*10,umet_pi_pitch*11], name="Outer Outer Fuel")
 inr_fuel_region =  inr_fu_crux.internal_region
-out_fuel_region = (~out_inr_fu_crux.internal_region & out_out_fu_crux.internal_region)
-fuel_regions = inr_fuel_region | out_fuel_region
+out_fuel_region = (out_inr_fu_crux.external_region & out_out_fu_crux.internal_region)
+# fuel_regions = (inr_fuel_region | out_fuel_region)
+non_fuel_regions = (out_out_fu_crux.external_region | (inr_fu_crux.external_region & out_inr_fu_crux.internal_region))
+between_fuel_regions = (inr_fu_crux.external_region & out_inr_fu_crux.internal_region)
+outside_region = out_out_fu_crux.external_region
 deck += inr_fu_crux.surfaces
 deck += out_inr_fu_crux.surfaces
 deck += out_out_fu_crux.surfaces
@@ -421,8 +449,10 @@ uo2_pin_cells = [
     mp.Cell(region=(+ug_bot_bot_surf & -ug_bot_top_surf  & +uo2_pi_clad_surf),                   material=Support_Material, density=Support_Material_density, comment='UO2 Pin Upper Grid Bottom'),
     mp.Cell(region=(+ug_bot_top_surf & -ug_top_bot_surf  & +uo2_pi_clad_surf),                   material=Cadmium,          density=Cadmium_density,          comment='UO2 Pin Upper Grid Cadmium'),
     mp.Cell(region=(+ug_top_bot_surf & -ug_top_top_surf  & +uo2_pi_clad_surf),                   material=Support_Material, density=Support_Material_density, comment='UO2 Pin Upper Grid Top'),
-    mp.Cell(region=(-wa_top_surf     & ~grid_regions     & +uo2_pi_clad_surf),                   material=Moderator,        density=Moderator_density,        comment='UO2 Pin Moderator'),
-    mp.Cell(region=(+wa_top_surf     & ~grid_regions     & +uo2_pi_clad_surf),                   material=Air,              density=Air_density,              comment='UO2 Pin Air')
+    mp.Cell(region=(+bp_top_surf     & -lg_bot_bot_surf  & +uo2_pi_clad_surf),                   material=Moderator,        density=Moderator_density,        comment='UO2 Pin Lower Moderator'),
+    mp.Cell(region=(-wa_top_surf     & +lg_top_top_surf  & +uo2_pi_clad_surf),                   material=Moderator,        density=Moderator_density,        comment='UO2 Pin Middle Moderator'),
+    mp.Cell(region=(+wa_top_surf     & -ug_bot_bot_surf  & +uo2_pi_clad_surf),                   material=Air,              density=Air_density,              comment='UO2 Pin Middle Air'),
+    mp.Cell(region=(-ta_top_surf     & +ug_top_top_surf  & +uo2_pi_clad_surf),                   material=Air,              density=Air_density,              comment='UO2 Pin Upper Air')
 ]
 uo2_u = mp.UniverseList(name=next_id(), cells=uo2_pin_cells)
 deck += uo2_pin_cells
@@ -440,9 +470,11 @@ Umet_pin_cells = [
     mp.Cell(region=(+ug_bot_bot_surf  & -ug_bot_top_surf   & +umet_pi_clad_surf),                    material=Support_Material, density=Support_Material_density, comment="Umet Pin Upper Grid Bottom"),
     mp.Cell(region=(+ug_bot_top_surf  & -ug_top_bot_surf   & +umet_pi_clad_surf),                    material=Cadmium,          density=Cadmium_density,          comment="Umet Pin Upper Grid Cadmium"),
     mp.Cell(region=(+ug_top_bot_surf  & -ug_top_top_surf   & +umet_pi_clad_surf),                    material=Support_Material, density=Support_Material_density, comment="Umet Pin Upper Grid Top"),
-    mp.Cell(region=(-wa_top_surf      & ~grid_regions      & +umet_pi_clad_surf),                    material=Moderator,        density=Moderator_density,        comment='Umet Pin Moderator'),
-    mp.Cell(region=(+wa_top_surf      & ~grid_regions      & +umet_pi_clad_surf),                    material=Air,              density=Air_density,              comment='Umet Pin Air')
-]
+    mp.Cell(region=(+bp_top_surf      & -lg_bot_bot_surf   & +umet_pi_clad_surf),                    material=Moderator,        density=Moderator_density,        comment='Umet Pin Lower Moderator'),
+    mp.Cell(region=(-wa_top_surf      & +lg_top_top_surf   & +umet_pi_clad_surf),                    material=Moderator,        density=Moderator_density,        comment='Umet Pin Middle Moderator'),
+    mp.Cell(region=(+wa_top_surf      & -ug_bot_bot_surf   & +umet_pi_clad_surf),                    material=Air,              density=Air_density,              comment='Umet Pin Middle Air'),
+    mp.Cell(region=(-ta_top_surf      & +ug_top_top_surf   & +umet_pi_clad_surf),                    material=Air,              density=Air_density,              comment='Umet Pin Upper Air')
+] 
 ume_u = mp.UniverseList(name=next_id(), cells=Umet_pin_cells)
 deck += Umet_pin_cells
 
@@ -454,24 +486,35 @@ Umet_empty_pin_cells = [
     mp.Cell(region=(+ug_bot_bot_surf & -ug_bot_top_surf), material=Support_Material, density=Support_Material_density, comment="Umet Empty Pin Upper Grid Bottom"),
     mp.Cell(region=(+ug_bot_top_surf & -ug_top_bot_surf), material=Cadmium,          density=Cadmium_density,          comment="Umet Empty Pin Upper Grid Cadmium"),
     mp.Cell(region=(+ug_top_bot_surf & -ug_top_top_surf), material=Support_Material, density=Support_Material_density, comment="Umet Empty Pin Upper Grid Top"),
-    mp.Cell(region=(-wa_top_surf & ~grid_regions),        material=Moderator,        density=Moderator_density,        comment='Umet Empty Pin Moderator'),
-    mp.Cell(region=(+wa_top_surf & ~grid_regions),        material=Air,              density=Air_density,              comment='Umet Empty Pin Air')
+    mp.Cell(region=(+bp_top_surf     & -lg_bot_bot_surf), material=Moderator,        density=Moderator_density,        comment='Umet Empty Pin Lower Moderator'),
+    mp.Cell(region=(-wa_top_surf     & +lg_top_top_surf), material=Moderator,        density=Moderator_density,        comment='Umet Empty Pin Middle Moderator'),
+    mp.Cell(region=(+wa_top_surf     & -ug_bot_bot_surf), material=Air,              density=Air_density,              comment='Umet Empty Pin Middle Air'),
+    mp.Cell(region=(-ta_top_surf     & +ug_top_top_surf), material=Air,              density=Air_density,              comment='Umet Empty Pin Upper Air')
 ]
 emp_u = mp.UniverseList(name=next_id(), cells=Umet_empty_pin_cells)
 deck += Umet_empty_pin_cells
 
 # Create the cells that are outside of the lattices (includes the space between the lattices)
-not_fuel_not_support_region = ~(fuel_regions | bp_region | lg_region | ug_region)
+bp_mod_region = (bp_oct_ext & -ta_surf & -bp_top_surf & +ta_bot_surf)
+outside_mod_region = (lg_region_ext & outside_region & -ta_surf & +bp_top_surf & -wa_top_surf)
+outside_air_region = (ug_region_ext & outside_region & -ta_surf & -ta_top_surf & +wa_top_surf)
+print(outside_mod_region)
+print(outside_air_region)
 non_lattice_cells = [
-    mp.Cell(region=(bp_region),                                                            material=Support_Material, density=Support_Material_density, comment="Non-Lattice Base Plate"),
-    mp.Cell(region=(lg_bot_region & ~fuel_regions),                                        material=Support_Material, density=Support_Material_density, comment="Non-Lattice Lower Grid Bottom"),
-    mp.Cell(region=(lg_cad_region & ~fuel_regions),                                        material=Cadmium,          density=Cadmium_density,          comment="Non-Lattice Lower Grid Cadmium"),
-    mp.Cell(region=(lg_top_region & ~fuel_regions),                                        material=Support_Material, density=Support_Material_density, comment="Non-Lattice Lower Grid Top"),
-    mp.Cell(region=(ug_bot_region & ~fuel_regions),                                        material=Support_Material, density=Support_Material_density, comment="Non-Lattice Upper Grid Bottom"),
-    mp.Cell(region=(ug_cad_region & ~fuel_regions),                                        material=Cadmium,          density=Cadmium_density,          comment="Non-Lattice Upper Grid Cadmium"),
-    mp.Cell(region=(ug_top_region & ~fuel_regions),                                        material=Support_Material, density=Support_Material_density, comment="Non-Lattice Upper Grid Top"),
-    mp.Cell(region=(-ta_surf & +ta_bot_surf & -wa_top_surf & not_fuel_not_support_region), material=Moderator,        density=Moderator_density,        comment="Non-Lattice Moderator"),
-    mp.Cell(region=(-ta_surf & +wa_top_surf & -ta_top_surf & not_fuel_not_support_region), material=Air,              density=Air_density,              comment="Non-Lattice Air")
+    mp.Cell(region=(bp_region),                                              material=Support_Material, density=Support_Material_density, comment="Non-Lattice Base Plate"),
+    mp.Cell(region=(non_fuel_regions & lg_bot_region),                       material=Support_Material, density=Support_Material_density, comment="Non-Lattice Lower Grid Bottom"),
+    mp.Cell(region=(non_fuel_regions & lg_cad_region),                       material=Cadmium,          density=Cadmium_density,          comment="Non-Lattice Lower Grid Cadmium"),
+    mp.Cell(region=(non_fuel_regions & lg_top_region),                       material=Support_Material, density=Support_Material_density, comment="Non-Lattice Lower Grid Top"),
+    mp.Cell(region=(non_fuel_regions & ug_bot_region),                       material=Support_Material, density=Support_Material_density, comment="Non-Lattice Upper Grid Bottom"),
+    mp.Cell(region=(non_fuel_regions & ug_cad_region),                       material=Cadmium,          density=Cadmium_density,          comment="Non-Lattice Upper Grid Cadmium"),
+    mp.Cell(region=(non_fuel_regions & ug_top_region),                       material=Support_Material, density=Support_Material_density, comment="Non-Lattice Upper Grid Top"),
+    mp.Cell(region=(between_fuel_regions & +bp_top_surf & -lg_bot_bot_surf), material=Moderator,        density=Moderator_density,        comment='Between Lattice Lower Moderator'),
+    mp.Cell(region=(between_fuel_regions & -wa_top_surf & +lg_top_top_surf), material=Moderator,        density=Moderator_density,        comment='Between Lattice Middle Moderator'),
+    mp.Cell(region=(between_fuel_regions & +wa_top_surf & -ug_bot_bot_surf), material=Air,              density=Air_density,              comment='Between Lattice Middle Air'),
+    mp.Cell(region=(between_fuel_regions & -ta_top_surf & +ug_top_top_surf), material=Air,              density=Air_density,              comment='Between Lattice Upper Air'),
+    mp.Cell(region=bp_mod_region,                                            material=Moderator,        density=Moderator_density,        comment="Baseplate Outer Moderator"),
+    mp.Cell(region=outside_mod_region,                                       material=Moderator,        density=Moderator_density,        comment="Outer Moderator"),
+    mp.Cell(region=outside_air_region,                                       material=Air,              density=Air_density,              comment="Outer Air")
 ]
 deck += non_lattice_cells
 
@@ -521,7 +564,7 @@ Umet_lattice = mp.Lattice(i=[-10,11], j=[-10,11], k=[0,0], lattice=Umet_numpy_la
 Umet_lattice_pin_cell = mp.Cell(region=umet_pin_region, fill=Umet_lattice, transform=Umet_trans, comment='U metal Lattice Pin Cell')
 deck += Umet_lattice_pin_cell
 Umet_lattice_universe = mp.UniverseList(name=next_id(), cells=Umet_lattice_pin_cell)
-Umet_lattice_cell = mp.Cell(region=(~out_inr_fu_crux.internal_region & out_out_fu_crux.internal_region & +bp_top_surf & -ta_top_surf), fill=Umet_lattice_universe, comment='U Metal Lattice')
+Umet_lattice_cell = mp.Cell(region=(out_inr_fu_crux.external_region & out_out_fu_crux.internal_region & +bp_top_surf & -ta_top_surf), fill=Umet_lattice_universe, comment='U Metal Lattice')
 deck += Umet_lattice_cell
 
 for cell in deck.cells.values():
