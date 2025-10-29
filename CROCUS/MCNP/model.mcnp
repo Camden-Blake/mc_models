@@ -316,6 +316,7 @@ M10
       7014.00c   4.14E-5
       8016.00c   9.07E-6 
 MT6 h-h2o.40t
+PRDMP 1e5 1e5 1 1 0 $ Don't print or dump till the end, write mctal, only keep one dump
 KCODE 1000000.0 1.0 50.0 650.0 
 KSRC 0.9185 0.9185 6.7 -0.9185 0.9185 6.7 0.9185 -0.9185 6.7 -0.9185 -0.9185
      6.7 

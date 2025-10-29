@@ -221,6 +221,7 @@ M9
 MT12 LWTR 
 MT1 LWTR 
 TR1 22.38 0.0 0.0 
+PRDMP 1e5 1e5 1 1 0 $ Don't print or dump till the end, write mctal, only keep one dump
 KCODE 100000.0 1.0 200.0 1200.0 
 KSRC 1.6526 0.0 90.0 -1.6526 0.0 90.0 0.0 1.62526 90.0 0.0 -1.62526 90.0 
 FC14 Flux vs Position

@@ -162,6 +162,7 @@ c  CORA13 -10.71 i16 10.71
 c  CORB13 -10.71 i16 10.71
 c  CORC13 -210 210
 c ENDMD
+PRDMP 1e5 1e5 1 1 0 $ Don't print or dump till the end, write mctal, only keep one dump
 KCODE 1000000.0 1.0 50.0 650.0 
 KSRC -10.0800   -10.0800  -200.0000
      -10.0800    -8.8200  -200.0000
