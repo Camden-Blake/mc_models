@@ -153,6 +153,13 @@ FMESH24:n GEOM=xyz ORIGIN= -10.71 -10.71 -210
           kmesh= 210
           out= xdmf
 FM24 301
+FC34 Flux Spectrum (Probably a better way to do this)
+FMESH34:n GEOM=xyz ORIGIN= -10.71 -10.71 -210
+          imesh= 10.71    
+          jmesh= 10.71    
+          kmesh= 210
+          emesh= 1e-11 127log 20
+          out= xdmf
 c I don't know if this is really the heating tally multiplier that I want.  It should just be multiplied by MT=301 which is the total kerma I think
 c TMESH can't run with OMP threading?
 c I could sidestep this with MPI tasks but that would be a lot of overhead.

@@ -1,6 +1,8 @@
 import openmc
 import openmc.stats
 
+import numpy as np
+
 # Materials
 #=====================
 
@@ -207,11 +209,18 @@ flux_tally_mesh.upper_right = [0.5*lattice_elements_x*pitch,  0.5*lattice_elemen
 flux_tally_mesh.dimension = [100, 100, 1]
 flux_mesh_filter = openmc.MeshFilter(flux_tally_mesh)
 
-flux_energy_filter = openmc.EnergyFilter(values=[1.E-5, 0.625, 20.E6])
+thermal_fast_energy_filter = openmc.EnergyFilter(values=[1.E-5, 0.625, 20.E6])
+flux_spectrum_energy_filter = openmc.EnergyFilter(values=np.logspace(start=np.log10(1e-5), 
+                                                       stop=np.log10(20e6), 
+                                                       num=129))
 
-flux_tally = openmc.Tally(name='flux')
+flux_tally = openmc.Tally(name='Flux vs Position')
 flux_tally.scores = ['flux']
-flux_tally.filters = [flux_energy_filter, flux_mesh_filter]
+flux_tally.filters = [thermal_fast_energy_filter, flux_mesh_filter]
+
+flux_spectrum_tally = openmc.Tally(name='Flux Spectrum')
+flux_spectrum_tally.filters = [flux_spectrum_energy_filter]
+flux_spectrum_tally.scores = ['flux']
 
 # Heating tally
 heating_tally_mesh = openmc.RegularMesh()
@@ -220,12 +229,12 @@ heating_tally_mesh.upper_right = [0.5*lattice_elements_x*pitch,  0.5*lattice_ele
 heating_tally_mesh.dimension = [17, 17, 1]
 heating_mesh_filter = openmc.MeshFilter(heating_tally_mesh)
 
-heating_tally = openmc.Tally(name = 'heating')
+heating_tally = openmc.Tally(name = 'Heating')
 heating_tally.scores = ['heating']
 heating_tally.filters = [heating_mesh_filter]
 
 # Add tallies
-model.tallies = openmc.Tallies([flux_tally, heating_tally])
+model.tallies = openmc.Tallies([flux_tally, flux_spectrum_tally, heating_tally])
 
 ## Source
 source = openmc.IndependentSource()
