@@ -141,7 +141,7 @@ zmin = -assembly_length/2
 zmax =  assembly_length/2
 
 rod_insertion = 375
-reactor_temperature = 565.0
+reactor_temperature = 5.1704E-8 # MeV : 600 Kelvin
 
 if rod_insertion < 0 or rod_insertion > assembly_length:
     raise Exception(f"Rod insertion must be [0, {assembly_length}]")
@@ -288,7 +288,7 @@ deck += assembly_cell
 
 for cell in deck.cells.values():
     cell.importances = {'n' : 1.0}
-    # cell.temperature = reactor_temperature
+    cell.temperature = reactor_temperature
 
 deck += mp.Cell(name=99, region=~assembly_region, importances={'n':0}, comment = 'Outer Void')
 
