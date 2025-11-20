@@ -229,14 +229,14 @@ FMESH14:n GEOM=xyz ORIGIN= -25 -25 0
           imesh= 25     iints= 500
           jmesh= 25     jints= 500
           kmesh= 171.78 kints= 1
-          emesh = 0 0.625e-6 20
+          emesh = 0.625e-6 20
           out= xdmf
 FC24 Pin Flux
 FMESH24:n GEOM=xyz ORIGIN= -17.0688 -17.0688 0
           imesh= 17.0688 iints= 21
           jmesh= 17.0688 jints= 21
           kmesh= 171.78
-          emesh = 0 0.625e-6 20
+          emesh = 0.625e-6 20
           out= xdmf
 FC34 Flux Spectrum (Probably a better way to do this)
 FMESH34:n GEOM=xyz ORIGIN= -25 -25 0

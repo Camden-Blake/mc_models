@@ -144,7 +144,7 @@ FMESH14:n GEOM=xyz ORIGIN= -10.71 -10.71 -210
           imesh= 10.71 iints= 99
           jmesh= 10.71 jints= 99
           kmesh= 210   kints= 99
-          emesh = 0 0.625e-6 20
+          emesh = 0.625e-6 20
           out= xdmf
 FC24 Heating
 FMESH24:n GEOM=xyz ORIGIN= -10.71 -10.71 -210
